@@ -1,7 +1,12 @@
 package com.finchrental.controller;
 
+import com.finchrental.dto.EquipmentRequestDTO;
+import com.finchrental.dto.EquipmentResponseDTO;
 import com.finchrental.entity.Equipment;
+import com.finchrental.exception.ResourceNotFoundException;
+import com.finchrental.mapper.EquipmentMapper;
 import com.finchrental.service.EquipmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,42 +20,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/equipment")
 public class EquipmentController {
 
     private final EquipmentService equipmentService;
+    private final EquipmentMapper equipmentMapper;
 
     @Autowired
-    public EquipmentController(EquipmentService equipmentService) {
+    public EquipmentController(EquipmentService equipmentService, EquipmentMapper equipmentMapper) {
         this.equipmentService = equipmentService;
+        this.equipmentMapper = equipmentMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Equipment>> getAllEquipment() {
-        List<Equipment> equipmentList = equipmentService.getAllEquipment();
+    public ResponseEntity<List<EquipmentResponseDTO>> getAllEquipment() {
+        List<EquipmentResponseDTO> equipmentList = equipmentService.getAllEquipment().stream()
+                .map(equipmentMapper::toResponseDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(equipmentList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Equipment> getEquipmentById(@PathVariable Long id) {
+    public ResponseEntity<EquipmentResponseDTO> getEquipmentById(@PathVariable Long id) {
         return equipmentService.getEquipmentById(id)
+                .map(equipmentMapper::toResponseDTO)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElseThrow(() -> new ResourceNotFoundException("Sprzęt o podanym ID nie istnieje: " + id));
     }
 
     @PostMapping
-    public ResponseEntity<Equipment> createEquipment(@RequestBody Equipment equipment) {
+    public ResponseEntity<EquipmentResponseDTO> createEquipment(@Valid @RequestBody EquipmentRequestDTO dto) {
+        Equipment equipment = equipmentMapper.toEntity(dto);
         Equipment created = equipmentService.createEquipment(equipment);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(equipmentMapper.toResponseDTO(created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @RequestBody Equipment equipmentDetails) {
+    public ResponseEntity<EquipmentResponseDTO> updateEquipment(@PathVariable Long id, @Valid @RequestBody EquipmentRequestDTO dto) {
+        Equipment equipmentDetails = equipmentMapper.toEntity(dto);
         return equipmentService.updateEquipment(id, equipmentDetails)
+                .map(equipmentMapper::toResponseDTO)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElseThrow(() -> new ResourceNotFoundException("Nie można zaktualizować - sprzęt o podanym ID nie istnieje: " + id));
     }
 
     @DeleteMapping("/{id}")
@@ -59,7 +73,7 @@ public class EquipmentController {
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new ResourceNotFoundException("Nie można usunąć - sprzęt o podanym ID nie istnieje: " + id);
         }
     }
 }
