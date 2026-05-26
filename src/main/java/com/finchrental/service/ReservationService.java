@@ -79,4 +79,12 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rezerwacja o podanym ID nie istnieje: " + id));
         reservationRepository.delete(reservation);
     }
+
+    @Transactional
+    public Reservation updateReservationStatus(Long id, ReservationStatus status) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rezerwacja o podanym ID nie istnieje: " + id));
+        reservation.setStatus(status);
+        return reservationRepository.save(reservation);
+    }
 }
