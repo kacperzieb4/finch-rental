@@ -37,6 +37,8 @@ public class EquipmentService {
             existingEquipment.setDescription(equipmentDetails.getDescription());
             existingEquipment.setPricePerDay(equipmentDetails.getPricePerDay());
             existingEquipment.setAvailable(equipmentDetails.getAvailable());
+            existingEquipment.setQuantity(equipmentDetails.getQuantity());
+            existingEquipment.setImageUrl(equipmentDetails.getImageUrl());
             return equipmentRepository.save(existingEquipment);
         });
     }

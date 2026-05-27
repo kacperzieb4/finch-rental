@@ -19,6 +19,8 @@ public class EquipmentMapper {
                 .description(equipment.getDescription())
                 .pricePerDay(equipment.getPricePerDay())
                 .available(equipment.getAvailable())
+                .imageUrl(equipment.getImageUrl())
+                .quantity(equipment.getQuantity())
                 .build();
     }
 
@@ -40,5 +42,7 @@ public class EquipmentMapper {
         equipment.setDescription(dto.getDescription());
         equipment.setPricePerDay(dto.getPricePerDay());
         equipment.setAvailable(dto.getAvailable());
+        equipment.setImageUrl(dto.getImageUrl());
+        equipment.setQuantity(dto.getQuantity());
     }
 }

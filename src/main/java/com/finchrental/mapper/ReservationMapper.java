@@ -1,9 +1,15 @@
 package com.finchrental.mapper;
 
-import com.finchrental.dto.ReservationRequestDTO;
+import com.finchrental.dto.ReservationItemResponseDTO;
 import com.finchrental.dto.ReservationResponseDTO;
+import com.finchrental.dto.ReservationRequestDTO;
 import com.finchrental.entity.Reservation;
+import com.finchrental.entity.ReservationItem;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ReservationMapper {
@@ -12,6 +18,14 @@ public class ReservationMapper {
         if (reservation == null) {
             return null;
         }
+
+        List<ReservationItemResponseDTO> itemDTOs = Collections.emptyList();
+        if (reservation.getItems() != null) {
+            itemDTOs = reservation.getItems().stream()
+                    .map(this::toItemResponseDTO)
+                    .collect(Collectors.toList());
+        }
+
         return ReservationResponseDTO.builder()
                 .id(reservation.getId())
                 .startDate(reservation.getStartDate())
@@ -20,8 +34,8 @@ public class ReservationMapper {
                 .customerEmail(reservation.getCustomerEmail())
                 .customerPhone(reservation.getCustomerPhone())
                 .status(reservation.getStatus())
-                .equipmentId(reservation.getEquipment() != null ? reservation.getEquipment().getId() : null)
-                .equipmentName(reservation.getEquipment() != null ? reservation.getEquipment().getName() : null)
+                .totalPrice(reservation.getTotalPrice())
+                .items(itemDTOs)
                 .build();
     }
 
@@ -35,6 +49,18 @@ public class ReservationMapper {
                 .customerName(dto.getCustomerName())
                 .customerEmail(dto.getCustomerEmail())
                 .customerPhone(dto.getCustomerPhone())
+                .build();
+    }
+
+    private ReservationItemResponseDTO toItemResponseDTO(ReservationItem item) {
+        if (item == null) {
+            return null;
+        }
+        return ReservationItemResponseDTO.builder()
+                .id(item.getId())
+                .equipmentId(item.getEquipment().getId())
+                .equipmentName(item.getEquipment().getName())
+                .pricePerDay(item.getPricePerDay())
                 .build();
     }
 }

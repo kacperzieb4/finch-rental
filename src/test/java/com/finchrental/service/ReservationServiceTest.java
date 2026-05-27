@@ -53,6 +53,7 @@ class ReservationServiceTest {
                 .description("Full-frame mirrorless camera")
                 .pricePerDay(BigDecimal.valueOf(200.00))
                 .available(true)
+                .quantity(2)
                 .build();
 
         newReservation = Reservation.builder()
@@ -66,26 +67,24 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_Success() {
-        // Given
         when(equipmentRepository.findById(1L)).thenReturn(Optional.of(equipment));
-        when(reservationRepository.findOverlappingReservations(1L, newReservation.getStartDate(), newReservation.getEndDate()))
-                .thenReturn(Collections.emptyList());
+        when(reservationRepository.countOverlappingReservations(1L, newReservation.getStartDate(), newReservation.getEndDate()))
+                .thenReturn(0L);
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
             Reservation r = invocation.getArgument(0);
-            r.setId(10L); // Symulacja wygenerowanego ID
+            r.setId(10L);
             return r;
         });
 
-        // When
-        Reservation result = reservationService.createReservation(newReservation, 1L);
+        Reservation result = reservationService.createReservation(newReservation, List.of(1L));
 
-        // Then
         assertNotNull(result);
         assertEquals(10L, result.getId());
         assertEquals(ReservationStatus.PENDING, result.getStatus());
-        assertEquals(equipment, result.getEquipment());
+        assertEquals(1, result.getItems().size());
+        assertEquals(equipment, result.getItems().get(0).getEquipment());
+        assertEquals(BigDecimal.valueOf(800.00), result.getTotalPrice());
 
-        // Weryfikacja zapisu i publikacji eventu
         verify(reservationRepository, times(1)).save(newReservation);
         
         ArgumentCaptor<ReservationCreatedEvent> eventCaptor = ArgumentCaptor.forClass(ReservationCreatedEvent.class);
@@ -95,38 +94,26 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_ConflictDates_ThrowsException() {
-        // Given
-        Reservation overlappingReservation = Reservation.builder()
-                .id(2L)
-                .startDate(LocalDate.now().plusDays(1))
-                .endDate(LocalDate.now().plusDays(3))
-                .equipment(equipment)
-                .status(ReservationStatus.PENDING)
-                .build();
-
         when(equipmentRepository.findById(1L)).thenReturn(Optional.of(equipment));
-        when(reservationRepository.findOverlappingReservations(1L, newReservation.getStartDate(), newReservation.getEndDate()))
-                .thenReturn(List.of(overlappingReservation));
+        when(reservationRepository.countOverlappingReservations(1L, newReservation.getStartDate(), newReservation.getEndDate()))
+                .thenReturn(2L);
 
-        // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                reservationService.createReservation(newReservation, 1L)
+                reservationService.createReservation(newReservation, List.of(1L))
         );
 
-        assertEquals("Sprzęt jest już zarezerwowany w tym przedziale czasowym", exception.getMessage());
+        assertEquals("Brak dostępnych sztuk sprzętu: Sony A7IV w wybranym terminie", exception.getMessage());
         verify(reservationRepository, never()).save(any(Reservation.class));
         verify(eventPublisher, never()).publishEvent(any());
     }
 
     @Test
     void createReservation_EndDateBeforeStartDate_ThrowsException() {
-        // Given
         newReservation.setStartDate(LocalDate.now().plusDays(5));
-        newReservation.setEndDate(LocalDate.now().plusDays(2)); // Koniec przed początkiem
+        newReservation.setEndDate(LocalDate.now().plusDays(2));
 
-        // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                reservationService.createReservation(newReservation, 1L)
+                reservationService.createReservation(newReservation, List.of(1L))
         );
 
         assertEquals("Data zakończenia rezerwacji nie może być przed datą rozpoczęcia", exception.getMessage());
@@ -137,12 +124,10 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_EquipmentNotFound_ThrowsException() {
-        // Given
         when(equipmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // When & Then
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
-                reservationService.createReservation(newReservation, 1L)
+                reservationService.createReservation(newReservation, List.of(1L))
         );
 
         assertEquals("Sprzęt o podanym ID nie istnieje: 1", exception.getMessage());

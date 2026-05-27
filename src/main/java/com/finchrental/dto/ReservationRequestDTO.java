@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,8 +20,8 @@ import java.time.LocalDate;
 @Builder
 public class ReservationRequestDTO {
 
-    @NotNull(message = "Identyfikator sprzętu jest wymagany")
-    private Long equipmentId;
+    @NotNull(message = "Koszyk nie może być pusty")
+    private List<Long> equipmentIds;
 
     @NotNull(message = "Data rozpoczęcia rezerwacji jest wymagana")
     @FutureOrPresent(message = "Data rozpoczęcia rezerwacji nie może być w przeszłości")

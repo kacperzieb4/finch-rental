@@ -1,0 +1,123 @@
+<div class="container">
+  <div class="back-link">
+    <a routerLink="/equipment" class="btn-link">&larr; Powrót do listy sprzętów</a>
+  </div>
+
+  @if (errorMessage() && !isLoading()) {
+    <div class="alert alert-error">
+      <strong>Błąd:</strong> {{ errorMessage() }}
+      
+      @if (validationErrors().length > 0) {
+        <ul class="error-list">
+          @for (err of validationErrors(); track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loader">Ładowanie szczegółów sprzętu...</div>
+  } @else {
+    @if (equipment(); as eq) {
+      <div class="rent-container">
+        <!-- Panel sprzętu -->
+        <div class="equipment-summary">
+          <span class="category-badge">{{ eq.category }}</span>
+          <h2 class="title">{{ eq.name }}</h2>
+          <p class="description">{{ eq.description }}</p>
+          <div class="price-box">
+            <span class="price-value">{{ eq.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</span>
+            <span class="price-lbl">za dobę</span>
+          </div>
+        </div>
+
+        <!-- Formularz rezerwacji -->
+        <div class="form-box">
+          <h3>Dane rezerwacji</h3>
+          
+          <form (ngSubmit)="onSubmit()" #rentForm="ngForm">
+            <div class="form-group">
+              <label for="customerName">Imię i nazwisko / Firma *</label>
+              <input 
+                type="text" 
+                id="customerName" 
+                name="customerName" 
+                [(ngModel)]="formData.customerName" 
+                required 
+                placeholder="np. Jan Kowalski" 
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="customerEmail">Adres E-mail *</label>
+              <input 
+                type="email" 
+                id="customerEmail" 
+                name="customerEmail" 
+                [(ngModel)]="formData.customerEmail" 
+                required 
+                placeholder="np. jan.kowalski@example.com" 
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="customerPhone">Numer telefonu</label>
+              <input 
+                type="text" 
+                id="customerPhone" 
+                name="customerPhone" 
+                [(ngModel)]="formData.customerPhone" 
+                placeholder="np. +48 123 456 789" 
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="startDate">Data rozpoczęcia *</label>
+                <input 
+                  type="date" 
+                  id="startDate" 
+                  name="startDate" 
+                  [(ngModel)]="formData.startDate" 
+                  required 
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group col">
+                <label for="endDate">Data zakończenia *</label>
+                <input 
+                  type="date" 
+                  id="endDate" 
+                  name="endDate" 
+                  [(ngModel)]="formData.endDate" 
+                  required 
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block" 
+              [disabled]="!rentForm.form.valid || isSubmitting()"
+            >
+              {{ isSubmitting() ? 'Rezerwowanie...' : 'Zarezerwuj teraz' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    }
+  }
+</div>

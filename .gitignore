@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend & Uploads ###
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/tmp/
+frontend/out-tsc/
+/uploads/
+.DS_Store
+

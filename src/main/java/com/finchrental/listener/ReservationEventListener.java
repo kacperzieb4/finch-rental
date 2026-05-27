@@ -13,10 +13,17 @@ public class ReservationEventListener {
 
     @EventListener
     public void handleReservationCreatedEvent(ReservationCreatedEvent event) {
+        String equipmentNames = "";
+        if (event.getReservation().getItems() != null) {
+            equipmentNames = event.getReservation().getItems().stream()
+                    .map(item -> item.getEquipment() != null ? item.getEquipment().getName() : "Unknown")
+                    .collect(java.util.stream.Collectors.joining(", "));
+        }
+
         logger.info("New reservation created: ID={}, Customer={}, Equipment={}, Range={} to {}",
                 event.getReservation().getId(),
                 event.getReservation().getCustomerName(),
-                event.getReservation().getEquipment().getName(),
+                equipmentNames,
                 event.getReservation().getStartDate(),
                 event.getReservation().getEndDate()
         );

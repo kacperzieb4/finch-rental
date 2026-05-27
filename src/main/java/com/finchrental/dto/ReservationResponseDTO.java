@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +25,6 @@ public class ReservationResponseDTO {
     private String customerEmail;
     private String customerPhone;
     private ReservationStatus status;
-    private Long equipmentId;
-    private String equipmentName;
+    private BigDecimal totalPrice;
+    private List<ReservationItemResponseDTO> items;
 }

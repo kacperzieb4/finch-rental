@@ -1,0 +1,181 @@
+<div class="container">
+  <h1 class="page-title">Twój Koszyk</h1>
+
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      {{ successMessage() }}
+      <div class="alert-actions">
+        <a routerLink="/equipment" class="btn btn-primary btn-sm">Wróć do katalogu</a>
+      </div>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+      @if (validationErrors().length > 0) {
+        <ul class="validation-list">
+          @for (err of validationErrors(); track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (cartItems().length === 0 && !successMessage()) {
+    <div class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <h2>Twój koszyk jest pusty</h2>
+      <p>Przejdź do katalogu i wybierz sprzęt, który chcesz wypożyczyć.</p>
+      <a routerLink="/equipment" class="btn btn-primary" style="margin-top: 1.5rem;">Zobacz sprzęt</a>
+    </div>
+  } @else if (cartItems().length > 0) {
+    <div class="cart-layout">
+      <!-- Lewa kolumna: Lista przedmiotów i termin -->
+      <div class="cart-left">
+        <div class="cart-card">
+          <div class="card-header">
+            <h2>1. Wybrany sprzęt ({{ cartItems().length }})</h2>
+            <button class="btn-clear" (click)="clearCart()">Opróżnij koszyk</button>
+          </div>
+          
+          <div class="cart-items-list">
+            @for (item of cartItems(); track $index) {
+              <div class="cart-item">
+                <div class="item-img-container">
+                  <img [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=150'" alt="{{ item.name }}" class="item-img">
+                </div>
+                <div class="item-details">
+                  <span class="item-category">{{ item.category }}</span>
+                  <h3 class="item-name">{{ item.name }}</h3>
+                  <p class="item-desc">{{ item.description }}</p>
+                </div>
+                <div class="item-price-actions">
+                  <div class="price-box">
+                    <span class="price-value">{{ item.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</span>
+                    <span class="price-unit">/ dzień</span>
+                  </div>
+                  <button class="btn-remove" (click)="removeFromCart(item.id!)" title="Usuń z koszyka">
+                    &times;
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="cart-card">
+          <h2>2. Termin wypożyczenia</h2>
+          <div class="dates-grid">
+            <div class="input-group">
+              <label for="startDate">Data rozpoczęcia</label>
+              <input 
+                type="date" 
+                id="startDate" 
+                #startInput
+                [value]="startDate()" 
+                (change)="onDatesChange(startInput.value, endInput.value)" 
+                class="form-control"
+              >
+            </div>
+            <div class="input-group">
+              <label for="endDate">Data zakończenia</label>
+              <input 
+                type="date" 
+                id="endDate" 
+                #endInput
+                [value]="endDate()" 
+                (change)="onDatesChange(startInput.value, endInput.value)" 
+                class="form-control"
+              >
+            </div>
+          </div>
+          @if (daysCount() > 0) {
+            <div class="days-summary">
+              Czas trwania: <strong>{{ daysCount() }} dni</strong>
+            </div>
+          } @else {
+            <div class="days-summary warning">
+              Wybierz poprawne daty rezerwacji.
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Prawa kolumna: Podsumowanie i Dane klienta -->
+      <div class="cart-right">
+        <div class="cart-card summary-card">
+          <h2>Podsumowanie</h2>
+          
+          <div class="summary-details">
+            <div class="summary-row">
+              <span>Liczba sprzętów:</span>
+              <span>{{ cartItems().length }} szt.</span>
+            </div>
+            <div class="summary-row">
+              <span>Czas trwania:</span>
+              <span>{{ daysCount() }} dni</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-row total-row">
+              <span>Razem do zapłaty:</span>
+              <span class="total-amount">{{ totalPrice() | currency:'PLN':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-card checkout-card">
+          <h2>3. Dane klienta</h2>
+          <form (ngSubmit)="onSubmit()" #checkoutForm="ngForm">
+            <div class="input-group">
+              <label for="customerName">Imię i Nazwisko *</label>
+              <input 
+                type="text" 
+                id="customerName" 
+                [(ngModel)]="customerName" 
+                name="customerName" 
+                required 
+                placeholder="np. Jan Kowalski" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="input-group">
+              <label for="customerEmail">Adres E-mail *</label>
+              <input 
+                type="email" 
+                id="customerEmail" 
+                [(ngModel)]="customerEmail" 
+                name="customerEmail" 
+                required 
+                placeholder="np. jan.kowalski@example.com" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="input-group">
+              <label for="customerPhone">Numer telefonu</label>
+              <input 
+                type="tel" 
+                id="customerPhone" 
+                [(ngModel)]="customerPhone" 
+                name="customerPhone" 
+                placeholder="np. +48 123 456 789" 
+                class="form-control"
+              >
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block" 
+              [disabled]="isSubmitting() || cartItems().length === 0 || daysCount() <= 0"
+            >
+              {{ isSubmitting() ? 'Wysyłanie...' : 'Zarezerwuj sprzęt' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>

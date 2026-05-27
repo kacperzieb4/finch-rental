@@ -13,16 +13,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EquipmentResponseDTO {
-
+public class ReservationItemResponseDTO {
     private Long id;
-    private String name;
-    private String category;
-    private String description;
+    private Long equipmentId;
+    private String equipmentName;
     private BigDecimal pricePerDay;
-    private Boolean available;
-    private String imageUrl;
-    private Integer quantity;
-    private Integer totalUnits;
-    private Integer availableUnits;
 }

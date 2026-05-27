@@ -5,11 +5,14 @@ import com.finchrental.dto.EquipmentResponseDTO;
 import com.finchrental.entity.Equipment;
 import com.finchrental.exception.ResourceNotFoundException;
 import com.finchrental.mapper.EquipmentMapper;
+import com.finchrental.repository.ReservationRepository;
 import com.finchrental.service.EquipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +20,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,11 +43,15 @@ public class EquipmentController {
 
     private final EquipmentService equipmentService;
     private final EquipmentMapper equipmentMapper;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public EquipmentController(EquipmentService equipmentService, EquipmentMapper equipmentMapper) {
+    public EquipmentController(EquipmentService equipmentService,
+                               EquipmentMapper equipmentMapper,
+                               ReservationRepository reservationRepository) {
         this.equipmentService = equipmentService;
         this.equipmentMapper = equipmentMapper;
+        this.reservationRepository = reservationRepository;
     }
 
     @GetMapping
@@ -43,6 +60,31 @@ public class EquipmentController {
                 .map(equipmentMapper::toResponseDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(equipmentList);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<EquipmentResponseDTO>> getAvailableEquipment(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<Equipment> catalog = equipmentService.getAllEquipment();
+        List<EquipmentResponseDTO> result = new ArrayList<>();
+
+        for (Equipment eq : catalog) {
+            long overlappingCount = reservationRepository.countOverlappingReservations(
+                    eq.getId(), startDate, endDate
+            );
+
+            int total = eq.getQuantity() != null ? eq.getQuantity() : 0;
+            int available = Math.max(0, total - (int) overlappingCount);
+
+            EquipmentResponseDTO dto = equipmentMapper.toResponseDTO(eq);
+            dto.setTotalUnits(total);
+            dto.setAvailableUnits(available);
+            result.add(dto);
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
@@ -76,6 +118,38 @@ public class EquipmentController {
             return ResponseEntity.noContent().build();
         } else {
             throw new ResourceNotFoundException("Nie można usunąć - sprzęt o podanym ID nie istnieje: " + id);
+        }
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Plik jest pusty");
+        }
+
+        try {
+            Path uploadDir = Paths.get("uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            String originalFileName = file.getOriginalFilename();
+            String extension = "";
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            }
+            String fileName = UUID.randomUUID().toString() + extension;
+            Path filePath = uploadDir.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("url", "/uploads/" + fileName);
+            return ResponseEntity.ok(response);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Błąd podczas zapisywania pliku na serwerze");
         }
     }
 }

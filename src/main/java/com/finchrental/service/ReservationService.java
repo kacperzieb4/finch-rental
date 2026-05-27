@@ -2,6 +2,7 @@ package com.finchrental.service;
 
 import com.finchrental.entity.Equipment;
 import com.finchrental.entity.Reservation;
+import com.finchrental.entity.ReservationItem;
 import com.finchrental.entity.ReservationStatus;
 import com.finchrental.event.ReservationCreatedEvent;
 import com.finchrental.exception.ResourceNotFoundException;
@@ -12,6 +13,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,34 +44,63 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation createReservation(Reservation reservation, Long equipmentId) {
-        // 1. Walidacja poprawności dat (endDate po startDate lub równa)
+    public Reservation createReservation(Reservation reservation, List<Long> equipmentIds) {
+        if (equipmentIds == null || equipmentIds.isEmpty()) {
+            throw new IllegalArgumentException("Koszyk nie może być pusty");
+        }
+
         if (reservation.getEndDate().isBefore(reservation.getStartDate())) {
             throw new IllegalArgumentException("Data zakończenia rezerwacji nie może być przed datą rozpoczęcia");
         }
 
-        // 2. Pobranie powiązanego sprzętu
-        Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sprzęt o podanym ID nie istnieje: " + equipmentId));
+        long days = ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate()) + 1;
 
-        // 3. Sprawdzenie konfliktów datowych (czy sprzęt jest dostępny)
-        List<Reservation> overlapping = reservationRepository.findOverlappingReservations(
-                equipmentId,
-                reservation.getStartDate(),
-                reservation.getEndDate()
-        );
-        if (!overlapping.isEmpty()) {
-            throw new IllegalArgumentException("Sprzęt jest już zarezerwowany w tym przedziale czasowym");
+        List<ReservationItem> reservationItems = new ArrayList<>();
+        List<Long> localAllocated = new ArrayList<>();
+        BigDecimal totalSum = BigDecimal.ZERO;
+
+        for (Long eqId : equipmentIds) {
+            Equipment equipment = equipmentRepository.findById(eqId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Sprzęt o podanym ID nie istnieje: " + eqId));
+
+            if (!Boolean.TRUE.equals(equipment.getAvailable())) {
+                throw new IllegalArgumentException("Wybrany sprzęt jest wyłączony z wypożyczania: " + equipment.getName());
+            }
+
+            long dbOccupied = reservationRepository.countOverlappingReservations(
+                    eqId,
+                    reservation.getStartDate(),
+                    reservation.getEndDate()
+            );
+
+            long localOccupied = localAllocated.stream().filter(id -> id.equals(eqId)).count();
+
+            int maxQuantity = equipment.getQuantity() != null ? equipment.getQuantity() : 1;
+
+            if (dbOccupied + localOccupied >= maxQuantity) {
+                throw new IllegalArgumentException("Brak dostępnych sztuk sprzętu: " + equipment.getName() + " w wybranym terminie");
+            }
+
+            localAllocated.add(eqId);
+
+            ReservationItem reservationItem = ReservationItem.builder()
+                    .reservation(reservation)
+                    .equipment(equipment)
+                    .pricePerDay(equipment.getPricePerDay() != null ? equipment.getPricePerDay() : BigDecimal.ZERO)
+                    .build();
+
+            reservationItems.add(reservationItem);
+
+            BigDecimal itemCost = reservationItem.getPricePerDay().multiply(BigDecimal.valueOf(days));
+            totalSum = totalSum.add(itemCost);
         }
 
-        // 4. Przypisanie sprzętu i domyślnego statusu
-        reservation.setEquipment(equipment);
+        reservation.setItems(reservationItems);
+        reservation.setTotalPrice(totalSum);
         reservation.setStatus(ReservationStatus.PENDING);
 
-        // 5. Zapis
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        // 6. Publikacja zdarzenia
         eventPublisher.publishEvent(new ReservationCreatedEvent(savedReservation));
 
         return savedReservation;

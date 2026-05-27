@@ -12,10 +12,11 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query("SELECT r FROM Reservation r WHERE r.equipment.id = :equipmentId " +
-           "AND r.status != 'REJECTED' " +
-           "AND :startDate <= r.endDate AND :endDate >= r.startDate")
-    List<Reservation> findOverlappingReservations(
+    @Query("SELECT COUNT(ri) FROM ReservationItem ri WHERE ri.equipment.id = :equipmentId " +
+           "AND ri.reservation.status != 'REJECTED' " +
+           "AND :startDate <= ri.reservation.endDate " +
+           "AND :endDate >= ri.reservation.startDate")
+    long countOverlappingReservations(
         @Param("equipmentId") Long equipmentId,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
