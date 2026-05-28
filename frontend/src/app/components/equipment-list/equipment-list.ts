@@ -17,7 +17,7 @@ export class EquipmentList implements OnInit {
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
 
-  categories = ['Aparat', 'Kamera', 'Obiektyw', 'Lighting', 'Audio', 'Grip'];
+  categories = ['Aparat', 'Kamera', 'Obiektyw', 'Pamięci', 'Lighting', 'Audio', 'Grip'];
 
   constructor(
     private apiService: ApiService,
@@ -88,6 +88,7 @@ export class EquipmentList implements OnInit {
       case 'Aparat': return 'Aparaty Fotograficzne';
       case 'Kamera': return 'Kamery Video';
       case 'Obiektyw': return 'Obiektywy';
+      case 'Pamięci': return 'Karty Pamięci i SSD';
       case 'Lighting': return 'Oświetlenie';
       case 'Audio': return 'Dźwięk';
       case 'Grip': return 'Statywy i Akcesoria';

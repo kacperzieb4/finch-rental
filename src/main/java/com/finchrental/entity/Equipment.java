@@ -1,6 +1,7 @@
 package com.finchrental.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,9 +33,13 @@ public class Equipment {
 
     private String name;
     private String category;
+
+    @Column(length = 2000)
     private String description;
+
     private BigDecimal pricePerDay;
     private Boolean available;
     private String imageUrl;
     private Integer quantity;
 }
+
