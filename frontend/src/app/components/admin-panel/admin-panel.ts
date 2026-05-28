@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { ApiService, Equipment, Reservation } from '../../services/api.service';
+import { ApiService, Equipment, Reservation, ReservationItem } from '../../services/api.service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -17,6 +17,34 @@ export class AdminPanel implements OnInit {
 
   reservations = signal<Reservation[]>([]);
   equipmentList = signal<Equipment[]>([]);
+  
+  reportDateSignal = signal<string>('');
+
+  dailyReservations = computed(() => {
+    const selectedDate = this.reportDateSignal();
+    if (!selectedDate) return [];
+    return this.reservations().filter(res => {
+      if (res.status === 'REJECTED') return false;
+      return res.startDate <= selectedDate && res.endDate >= selectedDate;
+    });
+  });
+
+  dailyEquipmentSummary = computed(() => {
+    const activeRes = this.dailyReservations();
+    const summaryMap = new Map<string, number>();
+    for (const res of activeRes) {
+      if (res.items) {
+        for (const item of res.items) {
+          const name = item.equipmentName;
+          summaryMap.set(name, (summaryMap.get(name) || 0) + 1);
+        }
+      }
+    }
+    return Array.from(summaryMap.entries()).map(([name, count]) => ({
+      name,
+      count
+    }));
+  });
   
   newEquipment: Equipment = {
     name: '',
@@ -44,6 +72,11 @@ export class AdminPanel implements OnInit {
     if (this.authService.isLoggedIn()) {
       this.loadAdminData();
     }
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    this.reportDateSignal.set(`${yyyy}-${mm}-${dd}`);
   }
 
   onLogin(): void {
@@ -233,6 +266,28 @@ export class AdminPanel implements OnInit {
         }
       }
     });
+  }
+
+  getGroupedItems(items: ReservationItem[] | undefined): { name: string; price: number; quantity: number }[] {
+    if (!items) return [];
+    const groups = new Map<string, { price: number; quantity: number }>();
+    for (const item of items) {
+      const existing = groups.get(item.equipmentName);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        groups.set(item.equipmentName, { price: item.pricePerDay, quantity: 1 });
+      }
+    }
+    return Array.from(groups.entries()).map(([name, val]) => ({
+      name,
+      price: val.price,
+      quantity: val.quantity
+    }));
+  }
+
+  printReport(): void {
+    window.print();
   }
 
   private clearMessagesAfterDelay(): void {

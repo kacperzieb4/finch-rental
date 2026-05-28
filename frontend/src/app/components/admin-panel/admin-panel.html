@@ -109,10 +109,13 @@
                     </td>
                     <td>
                       <ul class="reserved-items-list">
-                        @for (item of res.items; track item.id) {
+                        @for (item of getGroupedItems(res.items); track item.name) {
                           <li>
-                            <span class="item-name">{{ item.equipmentName }}</span>
-                            <span class="item-price">({{ item.pricePerDay }} zł)</span>
+                            <span class="item-name">{{ item.name }}</span>
+                            <span class="item-price"> ({{ item.price }} zł)</span>
+                            @if (item.quantity > 1) {
+                              - <strong class="item-qty">{{ item.quantity }} szt.</strong>
+                            }
                           </li>
                         }
                       </ul>
@@ -140,6 +143,106 @@
             </table>
           </div>
         }
+      </div>
+
+      <!-- Sekcja: Raport Rezerwacji na Dzień -->
+      <div class="admin-section daily-report-section full-width">
+        <div class="report-header-row">
+          <h2>Raport Rezerwacji na Dzień</h2>
+          <button type="button" (click)="printReport()" class="btn btn-secondary btn-print">
+            🖨 Drukuj raport
+          </button>
+        </div>
+
+        <div class="report-filter-bar">
+          <div class="form-group inline-date-picker">
+            <label for="reportDate">Wybierz datę raportu:</label>
+            <input 
+              type="date" 
+              id="reportDate" 
+              [ngModel]="reportDateSignal()" 
+              (ngModelChange)="reportDateSignal.set($event)" 
+              class="form-control report-date-input"
+            />
+          </div>
+        </div>
+
+        <!-- Nagłówek widoczny TYLKO przy wydruku -->
+        <div class="print-only-header">
+          <h1>FinchRental - Raport rezerwacji na dzień: {{ reportDateSignal() }}</h1>
+          <p>Wygenerowano automatycznie z panelu administratora.</p>
+        </div>
+
+        <!-- Podsumowanie wypożyczonego sprzętu -->
+        <div class="report-summary-box">
+          <h3>Zestawienie sprzętu na ten dzień</h3>
+          @if (dailyEquipmentSummary().length === 0) {
+            <p class="no-items-text">Brak wypożyczonego sprzętu w wybranym dniu.</p>
+          } @else {
+            <div class="summary-tags-grid">
+              @for (item of dailyEquipmentSummary(); track item.name) {
+                <div class="summary-tag-card">
+                  <span class="summary-tag-name">{{ item.name }}</span>
+                  <span class="summary-tag-qty">{{ item.count }} szt.</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Szczegółowa lista rezerwacji na dany dzień -->
+        <div class="report-details-box">
+          <h3>Szczegóły rezerwacji</h3>
+          @if (dailyReservations().length === 0) {
+            <div class="empty-state">Brak aktywnych rezerwacji na dzień {{ reportDateSignal() }}.</div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table print-table">
+                <thead>
+                  <tr>
+                    <th>Rezerwacja ID</th>
+                    <th>Klient</th>
+                    <th>Zarezerwowany sprzęt</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (res of dailyReservations(); track res.id) {
+                    <tr>
+                      <td>#{{ res.id }}</td>
+                      <td>
+                        <div class="customer-info">
+                          <strong>{{ res.customerName }}</strong>
+                          <span>{{ res.customerEmail }}</span>
+                          @if (res.customerPhone) {
+                            <span class="phone-label">Tel: {{ res.customerPhone }}</span>
+                          }
+                        </div>
+                      </td>
+                      <td>
+                        <ul class="reserved-items-list">
+                          @for (item of getGroupedItems(res.items); track item.name) {
+                            <li>
+                              <span class="item-name">{{ item.name }}</span>
+                              @if (item.quantity > 1) {
+                                - <strong class="item-qty">{{ item.quantity }} szt.</strong>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      </td>
+                      <td>
+                        <span class="status-badge" [class]="'badge-' + res.status?.toLowerCase()">
+                          {{ res.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Sekcja 2: Zarządzanie modelami sprzętu -->

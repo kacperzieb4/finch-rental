@@ -12,8 +12,6 @@
   border-bottom: none;
   padding-bottom: 0;
 }
-
-/* Login box styles */
 .login-wrapper {
   display: flex;
   justify-content: center;
@@ -44,8 +42,6 @@
   margin-bottom: 2rem;
   text-align: center;
 }
-
-/* Admin Dashboard layout */
 .admin-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -68,8 +64,6 @@
   padding-bottom: 0.5rem;
   color: var(--text-primary);
 }
-
-/* Checkbox alignment */
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -90,8 +84,6 @@
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
-
-/* Responsive Table styling */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -132,8 +124,6 @@
 .phone-label {
   color: var(--text-secondary);
 }
-
-/* Status Badges */
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
@@ -343,3 +333,129 @@
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
 }
+
+/* Daily Report Styles */
+.report-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.report-header-row h2 {
+  margin-bottom: 0 !important;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+.btn-print {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-print:hover {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-card) !important;
+}
+
+.report-filter-bar {
+  background-color: var(--bg-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.inline-date-picker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.inline-date-picker label {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.report-date-input {
+  max-width: 250px;
+}
+
+.print-only-header {
+  display: none;
+}
+
+.report-summary-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-summary-box h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.no-items-text {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.summary-tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.summary-tag-card {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.summary-tag-card:hover {
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.summary-tag-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-right: 0.5rem;
+}
+
+.summary-tag-qty {
+  background-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.report-details-box h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+

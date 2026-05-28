@@ -145,3 +145,116 @@ a {
   border: 1px dashed var(--border);
   color: var(--text-secondary);
 }
+
+.reserved-items-list {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+/* Print styles for Daily Reservation Report */
+@media print {
+  header, .navbar, .header-section, .alert, button, .btn, .report-filter-bar,
+  .admin-section:not(.daily-report-section), .admin-two-columns {
+    display: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    font-family: Arial, sans-serif !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .daily-report-section {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .daily-report-section h2 {
+    display: none !important;
+  }
+
+  .print-only-header {
+    display: block !important;
+    border-bottom: 2px solid #000000;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .print-only-header h1 {
+    font-size: 20pt;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+  }
+
+  .print-only-header p {
+    font-size: 10pt;
+    color: #555555;
+    margin: 0;
+  }
+
+  .report-summary-box, .report-details-box {
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 20px !important;
+    background: transparent !important;
+  }
+
+  .summary-tag-card {
+    border: 1px solid #000000 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #000000 !important;
+    page-break-inside: avoid;
+    display: inline-flex !important;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+
+  .summary-tag-qty {
+    border: 1px solid #000000 !important;
+    background: #f0f0f0 !important;
+    color: #000000 !important;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+
+  .table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  .table th, .table td {
+    border: 1px solid #000000 !important;
+    padding: 8px !important;
+    color: #000000 !important;
+  }
+
+  .table th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  .status-badge {
+    border: 1px solid #000000 !important;
+    background: transparent !important;
+    color: #000000 !important;
+    padding: 2px 4px !important;
+  }
+}
+
