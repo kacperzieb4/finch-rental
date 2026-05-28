@@ -20,7 +20,7 @@
       <!-- Iteracja po kategoriach z horyzontalnym scrollem -->
       @for (cat of categories; track cat) {
         @if (getEquipmentByCategory(cat).length > 0) {
-          <div class="category-section">
+          <div class="category-section" [id]="'category-' + cat">
             <h2 class="category-title-section">{{ getCategoryLabel(cat) }}</h2>
             <div class="category-row">
               @for (item of getEquipmentByCategory(cat); track item.id) {

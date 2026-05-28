@@ -153,6 +153,7 @@
   font-size: 1rem;
   color: var(--text-primary);
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 /* Booking Panel */
@@ -317,3 +318,22 @@
   font-size: 1.05rem;
   font-weight: 700;
 }
+
+.form-control {
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent-hover);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+}
+

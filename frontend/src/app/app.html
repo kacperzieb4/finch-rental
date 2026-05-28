@@ -4,9 +4,15 @@
       <span class="logo-accent">Finch</span>Rental
     </a>
     <nav class="navbar-links">
-      <a routerLink="/equipment" routerLinkActive="active" class="nav-item">Sprzęt</a>
+      <button class="nav-btn-link" (click)="scrollToCategory('Aparat')">Aparaty</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Kamera')">Kamery</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Obiektyw')">Obiektywy</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Pamięci')">Pamięci</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Lighting')">Oświetlenie</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Audio')">Dźwięk</button>
+      <button class="nav-btn-link" (click)="scrollToCategory('Grip')">Grip</button>
+      <span class="nav-divider"></span>
       <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-link">Koszyk</a>
-      <a routerLink="/admin" routerLinkActive="active" class="nav-item btn-nav">Panel Admina</a>
     </nav>
   </div>
 </header>
