@@ -34,7 +34,7 @@
           <h2 class="title">{{ eq.name }}</h2>
           <p class="description">{{ eq.description }}</p>
           <div class="price-box">
-            <span class="price-value">{{ eq.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</span>
+            <span class="price-value">{{ eq.pricePerDay }} zł</span>
             <span class="price-lbl">za dobę</span>
           </div>
         </div>
@@ -90,6 +90,8 @@
                   id="startDate" 
                   name="startDate" 
                   [(ngModel)]="formData.startDate" 
+                  [min]="cartService.minDate()"
+                  [max]="cartService.maxDate()"
                   required 
                   class="form-control"
                 />
@@ -102,6 +104,8 @@
                   id="endDate" 
                   name="endDate" 
                   [(ngModel)]="formData.endDate" 
+                  [min]="cartService.minDate()"
+                  [max]="cartService.maxDate()"
                   required 
                   class="form-control"
                 />

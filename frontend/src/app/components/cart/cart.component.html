@@ -36,27 +36,41 @@
       <div class="cart-left">
         <div class="cart-card">
           <div class="card-header">
-            <h2>1. Wybrany sprzęt ({{ cartItems().length }})</h2>
+            <h2>1. Wybrany sprzęt ({{ cartService.totalItemsCount() }} szt.)</h2>
             <button class="btn-clear" (click)="clearCart()">Opróżnij koszyk</button>
           </div>
           
           <div class="cart-items-list">
-            @for (item of cartItems(); track $index) {
+            @for (item of cartItems(); track item.equipment.id) {
               <div class="cart-item">
                 <div class="item-img-container">
-                  <img [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=150'" alt="{{ item.name }}" class="item-img">
+                  <img [src]="item.equipment.imageUrl ? (item.equipment.imageUrl.startsWith('http') ? item.equipment.imageUrl : 'http://localhost:8080' + item.equipment.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=150'" alt="{{ item.equipment.name }}" class="item-img">
                 </div>
                 <div class="item-details">
-                  <span class="item-category">{{ item.category }}</span>
-                  <h3 class="item-name">{{ item.name }}</h3>
-                  <p class="item-desc">{{ item.description }}</p>
+                  <span class="item-category">{{ item.equipment.category }}</span>
+                  <h3 class="item-name">{{ item.equipment.name }}</h3>
+                  <p class="item-desc">{{ item.equipment.description }}</p>
+                  
+                  @if (daysCount() > 0) {
+                    <div class="item-availability-badge">
+                      Dostępne sztuki w tym okresie: <strong>{{ getMaxAvailable(item.equipment.id!, item.equipment.quantity || 1) }}</strong>
+                    </div>
+                  }
                 </div>
-                <div class="item-price-actions">
+                
+                <div class="item-qty-actions">
+                  <div class="qty-control">
+                    <button type="button" class="btn-qty" (click)="decrementQuantity(item)" [disabled]="item.quantity <= 1">-</button>
+                    <span class="qty-value">{{ item.quantity }}</span>
+                    <button type="button" class="btn-qty" (click)="incrementQuantity(item)" [disabled]="item.quantity >= getMaxAvailable(item.equipment.id!, item.equipment.quantity || 1)">+</button>
+                  </div>
+                  
                   <div class="price-box">
-                    <span class="price-value">{{ item.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</span>
+                    <span class="price-value">{{ item.equipment.pricePerDay }} zł</span>
                     <span class="price-unit">/ dzień</span>
                   </div>
-                  <button class="btn-remove" (click)="removeFromCart(item.id!)" title="Usuń z koszyka">
+                  
+                  <button class="btn-remove" (click)="removeFromCart(item.equipment.id!)" title="Usuń z koszyka">
                     &times;
                   </button>
                 </div>
@@ -75,6 +89,8 @@
                 id="startDate" 
                 #startInput
                 [value]="startDate()" 
+                [min]="cartService.minDate()"
+                [max]="cartService.maxDate()"
                 (change)="onDatesChange(startInput.value, endInput.value)" 
                 class="form-control"
               >
@@ -86,6 +102,8 @@
                 id="endDate" 
                 #endInput
                 [value]="endDate()" 
+                [min]="cartService.minDate()"
+                [max]="cartService.maxDate()"
                 (change)="onDatesChange(startInput.value, endInput.value)" 
                 class="form-control"
               >
@@ -111,7 +129,7 @@
           <div class="summary-details">
             <div class="summary-row">
               <span>Liczba sprzętów:</span>
-              <span>{{ cartItems().length }} szt.</span>
+              <span>{{ cartService.totalItemsCount() }} szt.</span>
             </div>
             <div class="summary-row">
               <span>Czas trwania:</span>
@@ -120,7 +138,7 @@
             <div class="summary-divider"></div>
             <div class="summary-row total-row">
               <span>Razem do zapłaty:</span>
-              <span class="total-amount">{{ totalPrice() | currency:'PLN':'symbol':'1.2-2' }}</span>
+              <span class="total-amount">{{ totalPrice() }} zł</span>
             </div>
           </div>
         </div>

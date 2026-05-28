@@ -5,12 +5,7 @@
     </a>
     <nav class="navbar-links">
       <a routerLink="/equipment" routerLinkActive="active" class="nav-item">Sprzęt</a>
-      <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-link">
-        Koszyk
-        @if (cartService.cartItems().length > 0) {
-          <span class="cart-badge">{{ cartService.cartItems().length }}</span>
-        }
-      </a>
+      <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-link">Koszyk</a>
       <a routerLink="/admin" routerLinkActive="active" class="nav-item btn-nav">Panel Admina</a>
     </nav>
   </div>

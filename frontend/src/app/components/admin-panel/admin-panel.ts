@@ -22,7 +22,7 @@ export class AdminPanel implements OnInit {
     name: '',
     category: 'Camera',
     description: '',
-    pricePerDay: 100,
+    pricePerDay: 150,
     available: true,
     imageUrl: '',
     quantity: 1
@@ -167,7 +167,7 @@ export class AdminPanel implements OnInit {
           name: '',
           category: 'Camera',
           description: '',
-          pricePerDay: 100,
+          pricePerDay: 150,
           available: true,
           imageUrl: '',
           quantity: 1

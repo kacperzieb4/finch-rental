@@ -112,13 +112,13 @@
                         @for (item of res.items; track item.id) {
                           <li>
                             <span class="item-name">{{ item.equipmentName }}</span>
-                            <span class="item-price">({{ item.pricePerDay | currency:'PLN':'symbol':'1.2-2' }})</span>
+                            <span class="item-price">({{ item.pricePerDay }} zł)</span>
                           </li>
                         }
                       </ul>
                     </td>
                     <td>
-                      <span class="price-highlight">{{ res.totalPrice | currency:'PLN':'symbol':'1.2-2' }}</span>
+                      <span class="price-highlight">{{ res.totalPrice }} zł</span>
                     </td>
                     <td>
                       <span class="status-badge" [class]="'badge-' + res.status?.toLowerCase()">
@@ -411,7 +411,7 @@
                       </td>
                       <td><strong>{{ eq.name }}</strong></td>
                       <td>{{ eq.category }}</td>
-                      <td>{{ eq.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</td>
+                      <td>{{ eq.pricePerDay }} zł</td>
                       <td><span class="inventory-tag">{{ eq.quantity }}</span></td>
                       <td>
                         <span class="status-badge" [class]="eq.available ? 'badge-approved' : 'badge-rejected'">

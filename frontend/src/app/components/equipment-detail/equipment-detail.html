@@ -1,0 +1,164 @@
+<div class="container">
+  <div class="navigation-header">
+    <a routerLink="/equipment" class="btn-back">&larr; Wróć do katalogu</a>
+  </div>
+
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loader">
+      <div class="spinner"></div>
+      Ładowanie szczegółów sprzętu...
+    </div>
+  } @else {
+    @if (equipment()) {
+      <div class="detail-grid">
+        <!-- Kolumna lewa: Obrazek i Opis pod nim -->
+        <div class="detail-left">
+          <div class="image-card">
+            <img 
+              [src]="equipment()?.imageUrl ? (equipment()?.imageUrl!.startsWith('http') ? equipment()?.imageUrl : 'http://localhost:8080' + equipment()?.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'" 
+              alt="{{ equipment()?.name }}" 
+              class="product-image"
+            >
+          </div>
+          
+          <div class="description-card">
+            <h3 class="section-title">Opis sprzętu</h3>
+            <p class="product-description">{{ equipment()?.description || 'Brak opisu dla tego produktu.' }}</p>
+          </div>
+        </div>
+
+        <!-- Kolumna prawa: Szczegóły, dostępność, zamówienie -->
+        <div class="detail-right">
+          <div class="info-card">
+            <span class="category-badge">{{ equipment()?.category }}</span>
+            <h1 class="product-title">{{ equipment()?.name }}</h1>
+            
+            <div class="price-section">
+              <span class="price-val">{{ equipment()?.pricePerDay }} zł</span>
+              <span class="price-lbl">/ dzień wypożyczenia</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Panel Rezerwacji/Dostępności -->
+            <div class="booking-panel">
+              <h3 class="section-title">Określ termin i sprawdź dostępność</h3>
+              
+              <div class="dates-inline">
+                <div class="date-input-group">
+                  <label for="detailStart">Od</label>
+                  <input 
+                    type="date" 
+                    id="detailStart" 
+                    #startVal
+                    [value]="startDate" 
+                    [min]="cartService.minDate()"
+                    [max]="cartService.maxDate()"
+                    (change)="onDatesChange(startVal.value, endVal.value)" 
+                    class="form-control"
+                  >
+                </div>
+                <div class="date-input-group">
+                  <label for="detailEnd">Do</label>
+                  <input 
+                    type="date" 
+                    id="detailEnd" 
+                    #endVal
+                    [value]="endDate" 
+                    [min]="cartService.minDate()"
+                    [max]="cartService.maxDate()"
+                    (change)="onDatesChange(startVal.value, endVal.value)" 
+                    class="form-control"
+                  >
+                </div>
+              </div>
+
+              <!-- Statusy dostępności -->
+              <div class="availability-status">
+                @if (daysCount > 0) {
+                  <div class="days-indicator">
+                    Okres wypożyczenia: <strong>{{ daysCount }} dni</strong>
+                  </div>
+                  
+                  @if (availableUnits() !== null) {
+                    @if (availableUnits()! > 0) {
+                      <div class="avail-msg success">
+                        Dostępnych sztuk w tym terminie: <strong>{{ availableUnits() }}</strong> (z {{ equipment()?.quantity || 1 }} ogółem)
+                      </div>
+                      
+                      @if (cartCount > 0) {
+                        <div class="cart-info-msg">
+                          Masz już w koszyku: <strong>{{ cartCount }} szt.</strong>
+                        </div>
+                      }
+                    } @else {
+                      <div class="avail-msg error">
+                        Brak wolnych sztuk w tym terminie! Wszystkie egzemplarze są już zarezerwowane.
+                      </div>
+                    }
+                  }
+                } @else {
+                  <div class="avail-msg warning">
+                    Wprowadź poprawne daty, aby sprawdzić aktualną dostępność sprzętu.
+                  </div>
+                }
+              </div>
+
+              <!-- Koszyk i Ilość (Tylko jeśli określono termin i są wolne sztuki) -->
+              @if (daysCount > 0 && availableUnits() !== null && getMaxToSelect() > 0) {
+                <div class="add-to-cart-section">
+                  <div class="qty-selector-group">
+                    <label>Wybierz ilość:</label>
+                    <div class="qty-control">
+                      <button type="button" class="btn-qty" (click)="decrementQuantity()" [disabled]="selectedQuantity() <= 1">-</button>
+                      <span class="qty-value">{{ selectedQuantity() }}</span>
+                      <button type="button" class="btn-qty" (click)="incrementQuantity()" [disabled]="selectedQuantity() >= getMaxToSelect()">+</button>
+                    </div>
+                  </div>
+
+                  <div class="cost-summary">
+                    Cena całkowita za tę pozycję: <strong>{{ (equipment()!.pricePerDay * selectedQuantity() * daysCount) }} zł</strong>
+                  </div>
+
+                  <button (click)="addToCart()" class="btn btn-primary btn-add-cart">
+                    Dodaj {{ selectedQuantity() }} szt. do koszyka
+                  </button>
+                </div>
+              } @else if (daysCount > 0 && availableUnits() !== null && availableUnits()! > 0 && getMaxToSelect() <= 0) {
+                <div class="add-to-cart-section">
+                  <div class="avail-msg info">
+                    Wszystkie dostępne w tym okresie egzemplarze ({{ availableUnits() }} szt.) zostały już dodane do Twojego koszyka.
+                  </div>
+                  <a routerLink="/cart" class="btn btn-primary" style="text-decoration: none; text-align: center; display: block; margin-top: 1rem;">
+                    Przejdź do koszyka
+                  </a>
+                </div>
+              } @else if (daysCount > 0 && availableUnits() !== null && availableUnits() === 0) {
+                <div class="add-to-cart-section">
+                  <button class="btn btn-disabled btn-block" disabled>
+                    Brak wolnych sztuk w tym okresie
+                  </button>
+                </div>
+              } @else {
+                <div class="add-to-cart-section">
+                  <button class="btn btn-disabled btn-block" disabled>
+                    Wybierz termin rezerwacji
+                  </button>
+                </div>
+              }
+
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

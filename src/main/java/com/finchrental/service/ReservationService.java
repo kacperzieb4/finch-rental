@@ -53,6 +53,17 @@ public class ReservationService {
             throw new IllegalArgumentException("Data zakończenia rezerwacji nie może być przed datą rozpoczęcia");
         }
 
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalDate maxDate = today.plusMonths(3);
+
+        if (reservation.getStartDate().isBefore(today)) {
+            throw new IllegalArgumentException("Nie można rezerwować sprzętu wstecz (przed dzisiejszym dniem)");
+        }
+
+        if (reservation.getEndDate().isAfter(maxDate)) {
+            throw new IllegalArgumentException("Nie można rezerwować sprzętu na okres wykraczający poza 3 miesiące od dzisiaj");
+        }
+
         long days = ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate()) + 1;
 
         List<ReservationItem> reservationItems = new ArrayList<>();

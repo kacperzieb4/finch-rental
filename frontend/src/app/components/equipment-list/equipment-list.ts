@@ -1,13 +1,14 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ApiService, Equipment } from '../../services/api.service';
 import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-equipment-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './equipment-list.html',
   styleUrl: './equipment-list.css'
 })
@@ -95,11 +96,12 @@ export class EquipmentList implements OnInit {
   }
 
   addToCart(item: Equipment): void {
-    this.cartService.addToCart(item);
+    this.cartService.addToCart(item, 1);
   }
 
   getCartCount(id: number): number {
-    return this.cartService.cartItems().filter(i => i.id === id).length;
+    const item = this.cartService.cartItems().find(i => i.equipment.id === id);
+    return item ? item.quantity : 0;
   }
 
   hasAvailableUnits(item: Equipment): boolean {

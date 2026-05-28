@@ -1,48 +1,7 @@
 <div class="container">
   <h1 class="page-title">Wypożyczalnia Sprzętu Foto/Video</h1>
 
-  <!-- Pasek filtracji dat -->
-  <div class="dates-banner">
-    <div class="banner-content">
-      <div class="banner-title">
-        <span class="icon">📅</span>
-        <div>
-          <h3>Określ termin rezerwacji</h3>
-          <p>Sprawdź dostępność sprzętu w czasie rzeczywistym i skompletuj koszyk</p>
-        </div>
-      </div>
-      <div class="dates-inputs">
-        <div class="input-inline">
-          <label for="startDate">Od</label>
-          <input 
-            type="date" 
-            id="startDate" 
-            #startVal
-            [value]="startDate" 
-            (change)="onDatesChange(startVal.value, endVal.value)" 
-            class="form-control"
-          >
-        </div>
-        <div class="input-inline">
-          <label for="endDate">Do</label>
-          <input 
-            type="date" 
-            id="endDate" 
-            #endVal
-            [value]="endDate" 
-            (change)="onDatesChange(startVal.value, endVal.value)" 
-            class="form-control"
-          >
-        </div>
-        @if (daysCount > 0) {
-          <div class="days-badge">
-            {{ daysCount }} dni
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-  
+
   @if (errorMessage()) {
     <div class="alert alert-error">
       {{ errorMessage() }}
@@ -66,55 +25,34 @@
             <div class="category-row">
               @for (item of getEquipmentByCategory(cat); track item.id) {
                 <div class="card" [class.unavailable]="daysCount > 0 && item.availableUnits === 0">
-                  <!-- Zdjęcie sprzętu -->
-                  <div class="card-image-wrapper">
-                    <img 
-                      [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400'" 
-                      alt="{{ item.name }}" 
-                      class="card-img"
-                    >
-                    
-                    <!-- Odpowiednia etykieta dostępności -->
-                    @if (daysCount > 0) {
-                      <div class="card-badge" [class.badge-available]="item.availableUnits! > 0" [class.badge-unavailable]="item.availableUnits === 0">
-                        {{ item.availableUnits! > 0 ? 'Dostępny (' + item.availableUnits + '/' + item.totalUnits + ')' : 'Brak sztuk' }}
-                      </div>
-                    } @else {
-                      <div class="card-badge" [class.badge-available]="item.available" [class.badge-unavailable]="!item.available">
-                        {{ item.available ? 'Dostępny (Ilość: ' + item.quantity + ')' : 'Niedostępny' }}
-                      </div>
-                    }
-                  </div>
+                  <a [routerLink]="['/equipment', item.id]" class="card-image-link">
+                    <div class="card-image-wrapper">
+                      <img 
+                        [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400'" 
+                        alt="{{ item.name }}" 
+                        class="card-img"
+                      >
+                    </div>
+                  </a>
 
                   <div class="card-content">
                     <span class="card-category">{{ item.category }}</span>
-                    <h2 class="card-title">{{ item.name }}</h2>
+                    <h2 class="card-title">
+                      <a [routerLink]="['/equipment', item.id]" class="card-title-link">{{ item.name }}</a>
+                    </h2>
                     <p class="card-description">{{ item.description }}</p>
                     
                     <div class="card-footer">
                       <div class="price-container">
-                        <span class="price-amount">{{ item.pricePerDay | currency:'PLN':'symbol':'1.2-2' }}</span>
+                        <span class="price-amount">{{ item.pricePerDay }} zł</span>
                         <span class="price-unit">/ dzień</span>
                       </div>
                       
-                      @if (daysCount > 0) {
-                        @if (hasAvailableUnits(item)) {
-                          <button (click)="addToCart(item)" class="btn btn-primary">
-                            Dodaj do koszyka
-                            @if (getCartCount(item.id!) > 0) {
-                              <span class="btn-cart-count">({{ getCartCount(item.id!) }})</span>
-                            }
-                          </button>
-                        } @else {
-                          <button class="btn btn-disabled" disabled>
-                            {{ getCartCount(item.id!) > 0 ? 'W koszyku (' + getCartCount(item.id!) + ' max)' : 'Brak sztuk' }}
-                          </button>
-                        }
-                      } @else {
-                        <button class="btn btn-secondary" style="font-size: 0.85rem;" disabled>
-                          Określ termin
-                        </button>
-                      }
+                      <div class="card-actions">
+                        <a [routerLink]="['/equipment', item.id]" class="btn btn-secondary btn-sm" style="text-decoration: none; font-size: 0.85rem; padding: 0.6rem 1rem;">
+                          Szczegóły
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>

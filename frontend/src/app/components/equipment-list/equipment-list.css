@@ -282,3 +282,19 @@
     flex: 0 0 280px;
   }
 }
+
+.card-title-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.card-title-link:hover {
+  color: var(--accent-hover);
+}
+
+.card-image-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}

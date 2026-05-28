@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Equipment, Reservation } from '../../services/api.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-reservation-form',
@@ -30,7 +31,8 @@ export class ReservationForm implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    public cartService: CartService
   ) {}
 
   ngOnInit(): void {
