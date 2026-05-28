@@ -85,13 +85,20 @@ export class ApiService {
     );
   }
 
-  uploadImage(file: File): Observable<{ url: string }> {
+  uploadImage(file: File, productName?: string): Observable<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
+    let params = new HttpParams();
+    if (productName) {
+      params = params.set('name', productName);
+    }
     return this.http.post<{ url: string }>(
       `${this.baseUrl}/equipment/upload`, 
       formData, 
-      { headers: this.authService.getAuthHeaders() }
+      { 
+        headers: this.authService.getAuthHeaders(),
+        params: params
+      }
     );
   }
 

@@ -122,7 +122,9 @@ public class EquipmentController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, String>> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "name", required = false) String productName) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Plik jest pusty");
         }
@@ -138,8 +140,22 @@ public class EquipmentController {
             if (originalFileName != null && originalFileName.contains(".")) {
                 extension = originalFileName.substring(originalFileName.lastIndexOf("."));
             }
-            String fileName = UUID.randomUUID().toString() + extension;
+
+            String baseName;
+            if (productName != null && !productName.trim().isEmpty()) {
+                baseName = productName.trim().replaceAll("[^a-zA-Z0-9.-]", "_").replaceAll("_+", "_");
+            } else {
+                baseName = UUID.randomUUID().toString();
+            }
+
+            String fileName = baseName + extension;
             Path filePath = uploadDir.resolve(fileName);
+            int count = 1;
+            while (Files.exists(filePath)) {
+                fileName = baseName + "_" + count + extension;
+                filePath = uploadDir.resolve(fileName);
+                count++;
+            }
 
             Files.copy(file.getInputStream(), filePath);
 

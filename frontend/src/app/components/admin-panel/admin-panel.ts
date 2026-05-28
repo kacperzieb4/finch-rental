@@ -120,7 +120,7 @@ export class AdminPanel implements OnInit {
     if (file) {
       this.isUploading.set(true);
       this.errorMessage.set(null);
-      this.apiService.uploadImage(file).subscribe({
+      this.apiService.uploadImage(file, this.newEquipment.name).subscribe({
         next: (response) => {
           this.newEquipment.imageUrl = response.url;
           this.isUploading.set(false);
@@ -139,7 +139,7 @@ export class AdminPanel implements OnInit {
     if (file && this.editingEquipment) {
       this.isUploadingEdit.set(true);
       this.errorMessage.set(null);
-      this.apiService.uploadImage(file).subscribe({
+      this.apiService.uploadImage(file, this.editingEquipment.name).subscribe({
         next: (response) => {
           if (this.editingEquipment) {
             this.editingEquipment.imageUrl = response.url;
