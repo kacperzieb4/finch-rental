@@ -19,28 +19,27 @@
   } @else {
     @if (equipment()) {
       <div class="detail-grid">
-        <!-- Kolumna lewa: Obrazek i Opis pod nim -->
+
         <div class="detail-left">
           <div class="image-card">
-            <img 
-              [src]="equipment()?.imageUrl ? (equipment()?.imageUrl!.startsWith('http') ? equipment()?.imageUrl : 'http://localhost:8080' + equipment()?.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'" 
-              alt="{{ equipment()?.name }}" 
+            <img
+              [src]="equipment()?.imageUrl ? (equipment()?.imageUrl!.startsWith('http') ? equipment()?.imageUrl : 'http://localhost:8080' + equipment()?.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'"
+              alt="{{ equipment()?.name }}"
               class="product-image"
             >
           </div>
-          
+
           <div class="description-card">
             <h3 class="section-title">Opis sprzętu</h3>
             <p class="product-description">{{ equipment()?.description || 'Brak opisu dla tego produktu.' }}</p>
           </div>
         </div>
 
-        <!-- Kolumna prawa: Szczegóły, dostępność, zamówienie -->
         <div class="detail-right">
           <div class="info-card">
             <span class="category-badge">{{ equipment()?.category }}</span>
             <h1 class="product-title">{{ equipment()?.name }}</h1>
-            
+
             <div class="price-section">
               <span class="price-val">{{ equipment()?.pricePerDay }} zł</span>
               <span class="price-lbl">/ dzień wypożyczenia</span>
@@ -48,52 +47,50 @@
 
             <div class="divider"></div>
 
-            <!-- Panel Rezerwacji/Dostępności -->
             <div class="booking-panel">
               <h3 class="section-title">Określ termin i sprawdź dostępność</h3>
-              
+
               <div class="dates-inline">
                 <div class="date-input-group">
                   <label for="detailStart">Od</label>
-                  <input 
-                    type="date" 
-                    id="detailStart" 
+                  <input
+                    type="date"
+                    id="detailStart"
                     #startVal
-                    [value]="startDate" 
+                    [value]="startDate"
                     [min]="cartService.minDate()"
                     [max]="cartService.maxDate()"
-                    (change)="onDatesChange(startVal.value, endVal.value)" 
+                    (change)="onDatesChange(startVal.value, endVal.value)"
                     class="form-control"
                   >
                 </div>
                 <div class="date-input-group">
                   <label for="detailEnd">Do</label>
-                  <input 
-                    type="date" 
-                    id="detailEnd" 
+                  <input
+                    type="date"
+                    id="detailEnd"
                     #endVal
-                    [value]="endDate" 
+                    [value]="endDate"
                     [min]="cartService.minDate()"
                     [max]="cartService.maxDate()"
-                    (change)="onDatesChange(startVal.value, endVal.value)" 
+                    (change)="onDatesChange(startVal.value, endVal.value)"
                     class="form-control"
                   >
                 </div>
               </div>
 
-              <!-- Statusy dostępności -->
               <div class="availability-status">
                 @if (daysCount > 0) {
                   <div class="days-indicator">
                     Okres wypożyczenia: <strong>{{ daysCount }} dni</strong>
                   </div>
-                  
+
                   @if (availableUnits() !== null) {
                     @if (availableUnits()! > 0) {
                       <div class="avail-msg success">
                         Dostępnych sztuk w tym terminie: <strong>{{ availableUnits() }}</strong> (z {{ equipment()?.quantity || 1 }} ogółem)
                       </div>
-                      
+
                       @if (cartCount > 0) {
                         <div class="cart-info-msg">
                           Masz już w koszyku: <strong>{{ cartCount }} szt.</strong>
@@ -112,7 +109,6 @@
                 }
               </div>
 
-              <!-- Koszyk i Ilość (Tylko jeśli określono termin i są wolne sztuki) -->
               @if (daysCount > 0 && availableUnits() !== null && getMaxToSelect() > 0) {
                 <div class="add-to-cart-section">
                   <div class="qty-selector-group">

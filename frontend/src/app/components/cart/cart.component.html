@@ -32,14 +32,14 @@
     </div>
   } @else if (cartItems().length > 0) {
     <div class="cart-layout">
-      <!-- Lewa kolumna: Lista przedmiotów i termin -->
+
       <div class="cart-left">
         <div class="cart-card">
           <div class="card-header">
             <h2>1. Wybrany sprzęt ({{ cartService.totalItemsCount() }} szt.)</h2>
             <button class="btn-clear" (click)="clearCart()">Opróżnij koszyk</button>
           </div>
-          
+
           <div class="cart-items-list">
             @for (item of cartItems(); track item.equipment.id) {
               <div class="cart-item">
@@ -50,26 +50,26 @@
                   <span class="item-category">{{ item.equipment.category }}</span>
                   <h3 class="item-name">{{ item.equipment.name }}</h3>
                   <p class="item-desc">{{ item.equipment.description }}</p>
-                  
+
                   @if (daysCount() > 0) {
                     <div class="item-availability-badge">
                       Dostępne sztuki w tym okresie: <strong>{{ getMaxAvailable(item.equipment.id!, item.equipment.quantity || 1) }}</strong>
                     </div>
                   }
                 </div>
-                
+
                 <div class="item-qty-actions">
                   <div class="qty-control">
                     <button type="button" class="btn-qty" (click)="decrementQuantity(item)" [disabled]="item.quantity <= 1">-</button>
                     <span class="qty-value">{{ item.quantity }}</span>
                     <button type="button" class="btn-qty" (click)="incrementQuantity(item)" [disabled]="item.quantity >= getMaxAvailable(item.equipment.id!, item.equipment.quantity || 1)">+</button>
                   </div>
-                  
+
                   <div class="price-box">
                     <span class="price-value">{{ item.equipment.pricePerDay }} zł</span>
                     <span class="price-unit">/ dzień</span>
                   </div>
-                  
+
                   <button class="btn-remove" (click)="removeFromCart(item.equipment.id!)" title="Usuń z koszyka">
                     &times;
                   </button>
@@ -84,27 +84,27 @@
           <div class="dates-grid">
             <div class="input-group">
               <label for="startDate">Data rozpoczęcia</label>
-              <input 
-                type="date" 
-                id="startDate" 
+              <input
+                type="date"
+                id="startDate"
                 #startInput
-                [value]="startDate()" 
+                [value]="startDate()"
                 [min]="cartService.minDate()"
                 [max]="cartService.maxDate()"
-                (change)="onDatesChange(startInput.value, endInput.value)" 
+                (change)="onDatesChange(startInput.value, endInput.value)"
                 class="form-control"
               >
             </div>
             <div class="input-group">
               <label for="endDate">Data zakończenia</label>
-              <input 
-                type="date" 
-                id="endDate" 
+              <input
+                type="date"
+                id="endDate"
                 #endInput
-                [value]="endDate()" 
+                [value]="endDate()"
                 [min]="cartService.minDate()"
                 [max]="cartService.maxDate()"
-                (change)="onDatesChange(startInput.value, endInput.value)" 
+                (change)="onDatesChange(startInput.value, endInput.value)"
                 class="form-control"
               >
             </div>
@@ -121,11 +121,10 @@
         </div>
       </div>
 
-      <!-- Prawa kolumna: Podsumowanie i Dane klienta -->
       <div class="cart-right">
         <div class="cart-card summary-card">
           <h2>Podsumowanie</h2>
-          
+
           <div class="summary-details">
             <div class="summary-row">
               <span>Liczba sprzętów:</span>
@@ -148,45 +147,45 @@
           <form (ngSubmit)="onSubmit()" #checkoutForm="ngForm">
             <div class="input-group">
               <label for="customerName">Imię i Nazwisko *</label>
-              <input 
-                type="text" 
-                id="customerName" 
-                [(ngModel)]="customerName" 
-                name="customerName" 
-                required 
-                placeholder="np. Jan Kowalski" 
+              <input
+                type="text"
+                id="customerName"
+                [(ngModel)]="customerName"
+                name="customerName"
+                required
+                placeholder="np. Jan Kowalski"
                 class="form-control"
               >
             </div>
 
             <div class="input-group">
               <label for="customerEmail">Adres E-mail *</label>
-              <input 
-                type="email" 
-                id="customerEmail" 
-                [(ngModel)]="customerEmail" 
-                name="customerEmail" 
-                required 
-                placeholder="np. jan.kowalski@example.com" 
+              <input
+                type="email"
+                id="customerEmail"
+                [(ngModel)]="customerEmail"
+                name="customerEmail"
+                required
+                placeholder="np. jan.kowalski@example.com"
                 class="form-control"
               >
             </div>
 
             <div class="input-group">
               <label for="customerPhone">Numer telefonu</label>
-              <input 
-                type="tel" 
-                id="customerPhone" 
-                [(ngModel)]="customerPhone" 
-                name="customerPhone" 
-                placeholder="np. +48 123 456 789" 
+              <input
+                type="tel"
+                id="customerPhone"
+                [(ngModel)]="customerPhone"
+                name="customerPhone"
+                placeholder="np. +48 123 456 789"
                 class="form-control"
               >
             </div>
 
-            <button 
-              type="submit" 
-              class="btn btn-primary btn-block" 
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
               [disabled]="isSubmitting() || cartItems().length === 0 || daysCount() <= 0"
             >
               {{ isSubmitting() ? 'Wysyłanie...' : 'Zarezerwuj sprzęt' }}

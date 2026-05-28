@@ -215,7 +215,6 @@
   border-color: var(--danger);
 }
 
-/* Dates */
 .dates-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -279,7 +278,6 @@
   border-left-width: 3px;
 }
 
-/* Summary Card */
 .summary-card {
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(255, 255, 255, 0.9) 100%);
   border-color: rgba(251, 191, 36, 0.3);
@@ -321,7 +319,6 @@
   color: #d97706;
 }
 
-/* Checkout */
 .checkout-card h2 {
   font-size: 1.25rem;
   margin-bottom: 1.5rem;

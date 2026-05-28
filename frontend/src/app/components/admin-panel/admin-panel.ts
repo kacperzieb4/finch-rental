@@ -104,7 +104,10 @@ export class AdminPanel implements OnInit {
 
   loadReservations(): void {
     this.apiService.getReservations().subscribe({
-      next: (data) => this.reservations.set(data),
+      next: (data) => {
+        const sorted = [...data].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+        this.reservations.set(sorted);
+      },
       error: (err) => console.error('Błąd pobierania rezerwacji:', err)
     });
   }

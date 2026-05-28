@@ -67,7 +67,6 @@
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
 }
 
-/* Category Sections with Scroll */
 .category-section {
   margin-bottom: 3.5rem;
   scroll-margin-top: 80px;
@@ -92,7 +91,6 @@
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar for horizontal sections */
 .category-row::-webkit-scrollbar {
   height: 8px;
 }
@@ -112,7 +110,7 @@
 }
 
 .card {
-  flex: 0 0 320px; /* Do not shrink, set fixed width */
+  flex: 0 0 320px;
   scroll-snap-align: start;
   background-color: var(--bg-card);
   border: 1px solid var(--border);

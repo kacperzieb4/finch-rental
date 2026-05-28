@@ -152,10 +152,41 @@ public class DataSeeder implements CommandLineRunner {
                 .imageUrl(findImageForProduct("DJI RS 3 Pro"))
                 .build();
 
+        Equipment amaran60 = Equipment.builder()
+                .name("Aputure Amaran 60d")
+                .category("Lighting")
+                .description("Ultrakompaktowa i lekka lampa LED typu spotlight o mocy 65W z temperatura barwowa 5600K. Idealna do mobilnego studia, nagran vlogow czy oswietlenia wypelnijacego.\n\nSpecyfikacja techniczna:\n• Moc: 65W (odpowiednik 300W wolframu)\n• Temperatura barwowa: 5600K\n• Sterowanie: aplikacja Sidus Link na telefonie\n• Wspolczynniki: CRI 96+, TLCI 96+\n• Zasilanie: zasilacz sieciowy, akumulatory NP-F lub D-Tap")
+                .pricePerDay(BigDecimal.valueOf(45.00))
+                .available(true)
+                .quantity(2)
+                .imageUrl(findImageForProduct("Aputure Amaran 60d"))
+                .build();
+
+        Equipment sennheiserMke = Equipment.builder()
+                .name("Sennheiser MKE 600")
+                .category("Audio")
+                .description("Profesjonalny mikrofon kierunkowy typu shotgun, idealny do pracy na planie filmowym. Charakteryzuje sie wysoka kierunkowoscia, doskonale eliminuje szumy z otoczenia oraz posiada filtr gornoprzepustowy.\n\nSpecyfikacja techniczna:\n• Charakterystyka: superkardioidalna/lobar\n• Pasmo przenoszenia: 40 Hz - 20 000 Hz\n• Zasilanie: phantom 48V lub bateria 1.5V AA\n• Filtr: tlumienie niskich czestotliwosci (low-cut)")
+                .pricePerDay(BigDecimal.valueOf(50.00))
+                .available(true)
+                .quantity(3)
+                .imageUrl(findImageForProduct("Sennheiser MKE 600"))
+                .build();
+
+        Equipment canon2470 = Equipment.builder()
+                .name("Canon EF 24-70mm f2.8L II USM")
+                .category("Obiektyw")
+                .description("Legendarny, profesjonalny obiektyw zoom z kultowej serii L Canona. Oferuje bezkompromisowa ostrosc obrazu w calym zakresie ogniskowych, stale swiatlo f/2.8 i niezwykle szybki silnik USM.\n\nSpecyfikacja techniczna:\n• Ogniskowa: 24-70 mm\n• Maksymalna przeslona: f/2.8 (stala)\n• Bagnet obiektywu: Canon EF-mount\n• Konstrukcja: uszczelniona przed kurzem i wilgocia\n• Silnik AF: pierscieniowy USM (ultradzwiekowy)")
+                .pricePerDay(BigDecimal.valueOf(75.00))
+                .available(true)
+                .quantity(2)
+                .imageUrl(findImageForProduct("Canon EF 24-70mm f2.8L II USM"))
+                .build();
+
         equipmentRepository.saveAll(List.of(
                 sonyA7, canonR6, sonyFX3, bmpcc6k, sony2470, sigma1835,
                 sandiskSd, lexarCf, samsungSsd,
-                aputure300d, zoomH6, djiRonin
+                aputure300d, zoomH6, djiRonin,
+                amaran60, sennheiserMke, canon2470
         ));
 
         LocalDate today = LocalDate.now();
@@ -200,7 +231,27 @@ public class DataSeeder implements CommandLineRunner {
         items2.add(ReservationItem.builder().reservation(res2).equipment(djiRonin).pricePerDay(res2Item2Price).build());
         res2.setItems(items2);
 
-        reservationRepository.saveAll(List.of(res1, res2));
+        Reservation res3 = Reservation.builder()
+                .startDate(today.plusDays(5))
+                .endDate(today.plusDays(7))
+                .customerName("Piotr Wisniewski")
+                .customerEmail("piotr.wisniewski@example.com")
+                .customerPhone("501502503")
+                .status(ReservationStatus.APPROVED)
+                .build();
+
+        long days3 = ChronoUnit.DAYS.between(res3.getStartDate(), res3.getEndDate()) + 1;
+        BigDecimal res3Item1Price = aputure300d.getPricePerDay();
+        BigDecimal res3Item2Price = amaran60.getPricePerDay();
+        BigDecimal totalCost3 = res3Item1Price.add(res3Item2Price).multiply(BigDecimal.valueOf(days3));
+        res3.setTotalPrice(totalCost3);
+
+        List<ReservationItem> items3 = new ArrayList<>();
+        items3.add(ReservationItem.builder().reservation(res3).equipment(aputure300d).pricePerDay(res3Item1Price).build());
+        items3.add(ReservationItem.builder().reservation(res3).equipment(amaran60).pricePerDay(res3Item2Price).build());
+        res3.setItems(items3);
+
+        reservationRepository.saveAll(List.of(res1, res2, res3));
     }
 
     private String findImageForProduct(String productName) {

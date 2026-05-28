@@ -134,4 +134,49 @@ class ReservationServiceTest {
         verify(reservationRepository, never()).save(any(Reservation.class));
         verify(eventPublisher, never()).publishEvent(any());
     }
+
+    @Test
+    void createReservation_StartDateInPast_ThrowsException() {
+        newReservation.setStartDate(LocalDate.now().minusDays(1));
+        newReservation.setEndDate(LocalDate.now().plusDays(2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                reservationService.createReservation(newReservation, List.of(1L))
+        );
+
+        assertEquals("Nie można rezerwować sprzętu wstecz (przed dzisiejszym dniem)", exception.getMessage());
+        verify(reservationRepository, never()).save(any(Reservation.class));
+        verify(eventPublisher, never()).publishEvent(any());
+    }
+
+    @Test
+    void createReservation_EndDateAfterMaxDate_ThrowsException() {
+        newReservation.setStartDate(LocalDate.now().plusDays(1));
+        newReservation.setEndDate(LocalDate.now().plusMonths(3).plusDays(2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                reservationService.createReservation(newReservation, List.of(1L))
+        );
+
+        assertEquals("Nie można rezerwować sprzętu na okres wykraczający poza 3 miesiące od dzisiaj", exception.getMessage());
+        verify(reservationRepository, never()).save(any(Reservation.class));
+        verify(eventPublisher, never()).publishEvent(any());
+    }
+
+    @Test
+    void updateReservationStatus_Success() {
+        Reservation reservation = Reservation.builder()
+                .id(10L)
+                .status(ReservationStatus.PENDING)
+                .build();
+
+        when(reservationRepository.findById(10L)).thenReturn(Optional.of(reservation));
+        when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Reservation result = reservationService.updateReservationStatus(10L, ReservationStatus.APPROVED);
+
+        assertNotNull(result);
+        assertEquals(ReservationStatus.APPROVED, result.getStatus());
+        verify(reservationRepository, times(1)).save(reservation);
+    }
 }

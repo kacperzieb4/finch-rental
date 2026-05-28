@@ -33,7 +33,6 @@
   }
 }
 
-/* Equipment Summary Card */
 .equipment-summary {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -88,7 +87,6 @@
   color: var(--text-secondary);
 }
 
-/* Form Container */
 .form-box {
   background-color: var(--bg-card);
   border: 1px solid var(--border);

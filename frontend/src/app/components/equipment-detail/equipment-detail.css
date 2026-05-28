@@ -39,7 +39,6 @@
   }
 }
 
-/* Image Card */
 .image-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -79,7 +78,6 @@
   }
 }
 
-/* Info Card */
 .info-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -156,7 +154,6 @@
   white-space: pre-wrap;
 }
 
-/* Booking Panel */
 .booking-panel {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -191,7 +188,6 @@
   letter-spacing: 0.05em;
 }
 
-/* Availability Status */
 .availability-status {
   margin-top: 1.25rem;
 }
@@ -240,7 +236,6 @@
   color: var(--text-secondary);
 }
 
-/* Add to Cart Section */
 .add-to-cart-section {
   margin-top: 1.5rem;
   border-top: 1px solid var(--border);
@@ -336,4 +331,3 @@
   border-color: var(--accent-hover);
   box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
 }
-

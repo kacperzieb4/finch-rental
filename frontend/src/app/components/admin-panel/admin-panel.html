@@ -1,7 +1,7 @@
 <div class="container">
   <div class="header-section">
     <h1 class="page-title">Panel Administratora</h1>
-    
+
     @if (authService.isLoggedIn()) {
       <button (click)="onLogout()" class="btn btn-secondary">Wyloguj się</button>
     }
@@ -15,26 +15,25 @@
     <div class="alert alert-error">{{ errorMessage() }}</div>
   }
 
-  <!-- WIDOK LOGOWANIA -->
   @if (!authService.isLoggedIn()) {
     <div class="login-wrapper">
       <div class="login-box">
         <h2>Logowanie</h2>
         <p class="login-subtitle">Wprowadź dane administratora, aby zarządzać wypożyczalnią</p>
-        
+
         @if (loginError()) {
           <div class="alert alert-error">{{ loginError() }}</div>
         }
-        
+
         <form (ngSubmit)="onLogin()" #loginForm="ngForm">
           <div class="form-group">
             <label for="username">Nazwa użytkownika</label>
-            <input 
-              type="text" 
-              id="username" 
-              name="username" 
-              [(ngModel)]="loginData.username" 
-              required 
+            <input
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="loginData.username"
+              required
               class="form-control"
               placeholder="np. admin"
             />
@@ -42,20 +41,20 @@
 
           <div class="form-group">
             <label for="password">Hasło</label>
-            <input 
-              type="password" 
-              id="password" 
-              name="password" 
-              [(ngModel)]="loginData.password" 
-              required 
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="loginData.password"
+              required
               class="form-control"
               placeholder="••••••••"
             />
           </div>
 
-          <button 
-            type="submit" 
-            class="btn btn-primary btn-block" 
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
             [disabled]="!loginForm.form.valid"
           >
             Zaloguj się
@@ -64,13 +63,12 @@
       </div>
     </div>
   } @else {
-    <!-- WIDOK ZARZĄDZANIA (ZALOGOWANY) -->
+
     <div class="admin-grid">
-      
-      <!-- Sekcja 1: Rezerwacje -->
+
       <div class="admin-section reservations-section full-width">
         <h2>Zarządzanie Rezerwacjami</h2>
-        
+
         @if (reservations().length === 0) {
           <div class="empty-state">Brak złożonych rezerwacji w systemie.</div>
         } @else {
@@ -145,7 +143,6 @@
         }
       </div>
 
-      <!-- Sekcja: Raport Rezerwacji na Dzień -->
       <div class="admin-section daily-report-section full-width">
         <div class="report-header-row">
           <h2>Raport Rezerwacji na Dzień</h2>
@@ -157,23 +154,21 @@
         <div class="report-filter-bar">
           <div class="form-group inline-date-picker">
             <label for="reportDate">Wybierz datę raportu:</label>
-            <input 
-              type="date" 
-              id="reportDate" 
-              [ngModel]="reportDateSignal()" 
-              (ngModelChange)="reportDateSignal.set($event)" 
+            <input
+              type="date"
+              id="reportDate"
+              [ngModel]="reportDateSignal()"
+              (ngModelChange)="reportDateSignal.set($event)"
               class="form-control report-date-input"
             />
           </div>
         </div>
 
-        <!-- Nagłówek widoczny TYLKO przy wydruku -->
         <div class="print-only-header">
           <h1>FinchRental - Raport rezerwacji na dzień: {{ reportDateSignal() }}</h1>
           <p>Wygenerowano automatycznie z panelu administratora.</p>
         </div>
 
-        <!-- Podsumowanie wypożyczonego sprzętu -->
         <div class="report-summary-box">
           <h3>Zestawienie sprzętu na ten dzień</h3>
           @if (dailyEquipmentSummary().length === 0) {
@@ -190,7 +185,6 @@
           }
         </div>
 
-        <!-- Szczegółowa lista rezerwacji na dany dzień -->
         <div class="report-details-box">
           <h3>Szczegóły rezerwacji</h3>
           @if (dailyReservations().length === 0) {
@@ -245,33 +239,31 @@
         </div>
       </div>
 
-      <!-- Sekcja 2: Zarządzanie modelami sprzętu -->
       <div class="admin-two-columns full-width">
-        
-        <!-- FORMULARZ: DODAJ lub EDYTUJ -->
+
         <div class="admin-section form-section">
           @if (editingEquipment) {
             <h2>Edytuj Sprzęt</h2>
             <form (ngSubmit)="onUpdateEquipment()" #editForm="ngForm">
               <div class="form-group">
                 <label for="editName">Nazwa sprzętu *</label>
-                <input 
-                  type="text" 
-                  id="editName" 
-                  name="name" 
-                  [(ngModel)]="editingEquipment.name" 
-                  required 
+                <input
+                  type="text"
+                  id="editName"
+                  name="name"
+                  [(ngModel)]="editingEquipment.name"
+                  required
                   class="form-control"
                 />
               </div>
 
               <div class="form-group">
                 <label for="editCategory">Kategoria *</label>
-                <select 
-                  id="editCategory" 
-                  name="category" 
-                  [(ngModel)]="editingEquipment.category" 
-                  required 
+                <select
+                  id="editCategory"
+                  name="category"
+                  [(ngModel)]="editingEquipment.category"
+                  required
                   class="form-control"
                 >
                   <option value="Aparat">Aparat fotograficzny</option>
@@ -286,47 +278,47 @@
 
               <div class="form-group">
                 <label for="editPrice">Cena za dzień (PLN) *</label>
-                <input 
-                  type="number" 
-                  id="editPrice" 
-                  name="pricePerDay" 
-                  [(ngModel)]="editingEquipment.pricePerDay" 
-                  required 
-                  min="1" 
+                <input
+                  type="number"
+                  id="editPrice"
+                  name="pricePerDay"
+                  [(ngModel)]="editingEquipment.pricePerDay"
+                  required
+                  min="1"
                   class="form-control"
                 />
               </div>
 
               <div class="form-group">
                 <label for="editQuantity">Ilość sztuk *</label>
-                <input 
-                  type="number" 
-                  id="editQuantity" 
-                  name="quantity" 
-                  [(ngModel)]="editingEquipment.quantity" 
-                  required 
-                  min="1" 
+                <input
+                  type="number"
+                  id="editQuantity"
+                  name="quantity"
+                  [(ngModel)]="editingEquipment.quantity"
+                  required
+                  min="1"
                   class="form-control"
                 />
               </div>
 
               <div class="form-group">
                 <label for="editDescription">Opis sprzętu</label>
-                <textarea 
-                  id="editDescription" 
-                  name="description" 
-                  [(ngModel)]="editingEquipment.description" 
-                  rows="3" 
+                <textarea
+                  id="editDescription"
+                  name="description"
+                  [(ngModel)]="editingEquipment.description"
+                  rows="3"
                   class="form-control"
                 ></textarea>
               </div>
 
               <div class="form-group">
                 <label for="editFile">Zdjęcie sprzętu</label>
-                <input 
-                  type="file" 
-                  id="editFile" 
-                  (change)="onFileSelectedForEdit($event)" 
+                <input
+                  type="file"
+                  id="editFile"
+                  (change)="onFileSelectedForEdit($event)"
                   class="form-control file-input"
                   accept="image/*"
                 />
@@ -343,27 +335,27 @@
               </div>
 
               <div class="form-group checkbox-group">
-                <input 
-                  type="checkbox" 
-                  id="editAvailable" 
-                  name="available" 
+                <input
+                  type="checkbox"
+                  id="editAvailable"
+                  name="available"
                   [(ngModel)]="editingEquipment.available"
                 />
                 <label for="editAvailable" class="checkbox-label">Dostępny w katalogu</label>
               </div>
 
               <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                <button 
-                  type="submit" 
-                  class="btn btn-primary" 
+                <button
+                  type="submit"
+                  class="btn btn-primary"
                   style="flex: 1;"
                   [disabled]="!editForm.form.valid || isUploadingEdit()"
                 >
                   Zapisz zmiany
                 </button>
-                <button 
-                  type="button" 
-                  (click)="cancelEdit()" 
+                <button
+                  type="button"
+                  (click)="cancelEdit()"
                   class="btn btn-secondary"
                   style="flex: 1;"
                 >
@@ -376,12 +368,12 @@
             <form (ngSubmit)="onCreateEquipment()" #eqForm="ngForm">
               <div class="form-group">
                 <label for="eqName">Nazwa sprzętu *</label>
-                <input 
-                  type="text" 
-                  id="eqName" 
-                  name="name" 
-                  [(ngModel)]="newEquipment.name" 
-                  required 
+                <input
+                  type="text"
+                  id="eqName"
+                  name="name"
+                  [(ngModel)]="newEquipment.name"
+                  required
                   class="form-control"
                   placeholder="np. Sony FX3"
                 />
@@ -389,11 +381,11 @@
 
               <div class="form-group">
                 <label for="eqCategory">Kategoria *</label>
-                <select 
-                  id="eqCategory" 
-                  name="category" 
-                  [(ngModel)]="newEquipment.category" 
-                  required 
+                <select
+                  id="eqCategory"
+                  name="category"
+                  [(ngModel)]="newEquipment.category"
+                  required
                   class="form-control"
                 >
                   <option value="Aparat">Aparat fotograficzny</option>
@@ -408,26 +400,26 @@
 
               <div class="form-group">
                 <label for="eqPrice">Cena za dzień (PLN) *</label>
-                <input 
-                  type="number" 
-                  id="eqPrice" 
-                  name="pricePerDay" 
-                  [(ngModel)]="newEquipment.pricePerDay" 
-                  required 
-                  min="1" 
+                <input
+                  type="number"
+                  id="eqPrice"
+                  name="pricePerDay"
+                  [(ngModel)]="newEquipment.pricePerDay"
+                  required
+                  min="1"
                   class="form-control"
                 />
               </div>
 
               <div class="form-group">
                 <label for="eqQuantity">Ilość sztuk *</label>
-                <input 
-                  type="number" 
-                  id="eqQuantity" 
-                  name="quantity" 
-                  [(ngModel)]="newEquipment.quantity" 
-                  required 
-                  min="1" 
+                <input
+                  type="number"
+                  id="eqQuantity"
+                  name="quantity"
+                  [(ngModel)]="newEquipment.quantity"
+                  required
+                  min="1"
                   class="form-control"
                   placeholder="1"
                 />
@@ -435,11 +427,11 @@
 
               <div class="form-group">
                 <label for="eqDescription">Opis sprzętu</label>
-                <textarea 
-                  id="eqDescription" 
-                  name="description" 
-                  [(ngModel)]="newEquipment.description" 
-                  rows="3" 
+                <textarea
+                  id="eqDescription"
+                  name="description"
+                  [(ngModel)]="newEquipment.description"
+                  rows="3"
                   class="form-control"
                   placeholder="Krótki opis techniczny..."
                 ></textarea>
@@ -447,10 +439,10 @@
 
               <div class="form-group">
                 <label for="eqFile">Zdjęcie sprzętu</label>
-                <input 
-                  type="file" 
-                  id="eqFile" 
-                  (change)="onFileSelected($event)" 
+                <input
+                  type="file"
+                  id="eqFile"
+                  (change)="onFileSelected($event)"
                   class="form-control file-input"
                   accept="image/*"
                 />
@@ -468,18 +460,18 @@
               </div>
 
               <div class="form-group checkbox-group">
-                <input 
-                  type="checkbox" 
-                  id="eqAvailable" 
-                  name="available" 
+                <input
+                  type="checkbox"
+                  id="eqAvailable"
+                  name="available"
                   [(ngModel)]="newEquipment.available"
                 />
                 <label for="eqAvailable" class="checkbox-label">Dostępny w katalogu</label>
               </div>
 
-              <button 
-                type="submit" 
-                class="btn btn-primary btn-block" 
+              <button
+                type="submit"
+                class="btn btn-primary btn-block"
                 [disabled]="!eqForm.form.valid || isUploading()"
               >
                 Utwórz Sprzęt
@@ -488,10 +480,9 @@
           }
         </div>
 
-        <!-- Lista modeli sprzętu -->
         <div class="admin-section list-section">
           <h2>Lista Sprzętu w Katalogu</h2>
-          
+
           @if (equipmentList().length === 0) {
             <div class="empty-state">Brak sprzętu w bazie.</div>
           } @else {

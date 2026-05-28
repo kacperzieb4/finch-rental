@@ -1,7 +1,6 @@
 <div class="container">
   <h1 class="page-title">Wypożyczalnia Sprzętu Foto/Video</h1>
 
-
   @if (errorMessage()) {
     <div class="alert alert-error">
       {{ errorMessage() }}
@@ -17,7 +16,7 @@
     @if (equipmentList().length === 0) {
       <div class="empty-state">Brak dostępnego sprzętu w bazie danych.</div>
     } @else {
-      <!-- Iteracja po kategoriach z horyzontalnym scrollem -->
+
       @for (cat of categories; track cat) {
         @if (getEquipmentByCategory(cat).length > 0) {
           <div class="category-section" [id]="'category-' + cat">
@@ -27,9 +26,9 @@
                 <div class="card" [class.unavailable]="daysCount > 0 && item.availableUnits === 0">
                   <a [routerLink]="['/equipment', item.id]" class="card-image-link">
                     <div class="card-image-wrapper">
-                      <img 
-                        [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400'" 
-                        alt="{{ item.name }}" 
+                      <img
+                        [src]="item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:8080' + item.imageUrl) : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400'"
+                        alt="{{ item.name }}"
                         class="card-img"
                       >
                     </div>
@@ -41,13 +40,13 @@
                       <a [routerLink]="['/equipment', item.id]" class="card-title-link">{{ item.name }}</a>
                     </h2>
                     <p class="card-description">{{ item.description }}</p>
-                    
+
                     <div class="card-footer">
                       <div class="price-container">
                         <span class="price-amount">{{ item.pricePerDay }} zł</span>
                         <span class="price-unit">/ dzień</span>
                       </div>
-                      
+
                       <div class="card-actions">
                         <a [routerLink]="['/equipment', item.id]" class="btn btn-secondary btn-sm" style="text-decoration: none; font-size: 0.85rem; padding: 0.6rem 1rem;">
                           Szczegóły

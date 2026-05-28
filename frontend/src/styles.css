@@ -51,7 +51,6 @@ a {
   display: inline-block;
 }
 
-/* Alert styles */
 .alert {
   padding: 1rem 1.5rem;
   border-radius: 12px;
@@ -74,7 +73,6 @@ a {
   border: 1px solid #dcfce7;
 }
 
-/* Button styles */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -129,7 +127,6 @@ a {
   background-color: #e5e7eb;
 }
 
-/* Loader */
 .loader {
   text-align: center;
   font-size: 1.2rem;
@@ -151,7 +148,6 @@ a {
   margin: 0;
 }
 
-/* Print styles for Daily Reservation Report */
 @media print {
   header, .navbar, .header-section, .alert, button, .btn, .report-filter-bar,
   .admin-section:not(.daily-report-section), .admin-two-columns {
@@ -257,4 +253,3 @@ a {
     padding: 2px 4px !important;
   }
 }
-

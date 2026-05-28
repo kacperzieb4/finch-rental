@@ -110,6 +110,29 @@
   background-color: var(--bg-secondary);
 }
 
+.reservations-section .table-responsive {
+  max-height: 450px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.list-section .table-responsive {
+  max-height: 690px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.reservations-section .table th,
+.list-section .table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg-secondary);
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+
 .customer-info {
   display: flex;
   flex-direction: column;
@@ -151,7 +174,6 @@
   border: 1px solid #fca5a5;
 }
 
-/* Mini Action Buttons inside table */
 .action-buttons {
   display: flex;
   gap: 0.5rem;
@@ -232,7 +254,6 @@
   width: 100%;
 }
 
-/* Split layouts */
 .admin-two-columns {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -334,7 +355,6 @@
   border-radius: 4px;
 }
 
-/* Daily Report Styles */
 .report-header-row {
   display: flex;
   justify-content: space-between;
@@ -457,5 +477,3 @@
   margin-bottom: 1rem;
   color: var(--text-primary);
 }
-
-
